@@ -1,0 +1,24 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Dependencies（言語に合わせて追記）
+node_modules/
+__pycache__/
+*.pyc
+.gradle/
+build/
+target/
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log

@@ -14,7 +14,7 @@
 
 ### src/shared/（共有データ構造・DB永続化）
 - dto/：複数画面で共有するデータ構造（ロジックは持たない）
-- persistence/record/：DBテーブルと1対1のデータ構造
+- persistence/entity/：DBテーブルと1対1のデータ構造
 - persistence/mapper/：DBアクセス処理
 
 ## 画面内 data/ と shared/dto/ の使い分け
@@ -27,19 +27,24 @@
 | ロジック | 持たない | 持たない |
 | 判断 | 1画面でしか使わないもの全部 | 3画面以上から参照されるもの |
 
-## DB Record と DTO の区別
+## DB Entity（persistence/entity/）と DTO（shared/dto/）の区別
 
-| | DB Record（shared/persistence/record/） | DTO（shared/dto/） |
+| | DB Entity（shared/persistence/entity/） | DTO（shared/dto/） |
 |---|---|---|
 | 目的 | テーブルの行を表す | 必要な項目だけ抽出・整形した受け渡し用データ |
 | 内容 | カラムと1対1対応 | ビジネス上必要な項目のみ |
 | ロジック | 持たない | 持たない |
 | 管理 | テーブルごとに1つ（増殖させない） | 用途に応じて作成 |
-| 配置 | shared/persistence/record/ に集約 | shared/dto/ |
+| 配置 | shared/persistence/entity/ に集約 | shared/dto/ |
 
-### なぜDB Recordを集約するか
+### なぜDB Entityを集約するか
 同じテーブルを複数画面から参照する場合、画面ごとにDB用データ構造を作ると増殖して「どれが正？」になる。
-shared/persistence/record/ に1テーブル1Recordで集約し、画面側は必要な項目だけDTOやdata/のResponseに変換して返す。
+shared/persistence/entity/ に1テーブル1Entityで集約し、画面側は必要な項目だけDTOやdata/のResponseに変換して返す。
+
+### 注意：persistence/entity/ はDDD Entityではない
+- persistence/entity/ はDBテーブルと1対1のデータ構造（ロジックを持たない）
+- DDD Entityは「振る舞い（ロジック）を持つオブジェクト」であり、別物
+- persistence/ というフォルダ配下にあることで「DB用」と判断できる
 
 ## shared/ に追加する際の判断基準
 1. 3画面以上から同じデータ構造を参照する → shared/dto/ に追加
@@ -55,4 +60,5 @@ shared/persistence/record/ に1テーブル1Recordで集約し、画面側は必
 ## DDD要素について
 - 本構成では簡易DDDとして「ユビキタス言語（GLOSSARY.md）」と「境界の判断基準（本ファイル）」のみ導入
 - shared/dto/ はDDD Entityではない（ロジックを持たない受け渡し用データ構造）
+- shared/persistence/entity/ もDDD Entityではない（DBテーブルと1対1のデータ構造）
 - フルDDDの導入が必要になった場合は STAGE_GUIDE.md の Stage 3 を参照

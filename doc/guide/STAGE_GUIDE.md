@@ -14,6 +14,7 @@
 - DBテーブル数：少ない
 
 ### 構成例
+
 ```text
 project-root/
 ├── AI_CONTEXT.md
@@ -54,9 +55,9 @@ project-root/
 │   └── shared/
 │       ├── dto/                     # この段階ではまだ空 or 最小限
 │       └── persistence/
-│           ├── record/
-│           │   ├── UserRecord
-│           │   └── OrderRecord
+│           ├── entity/
+│           │   ├── UserEntity
+│           │   └── OrderEntity
 │           └── mapper/
 │               ├── UserMapper
 │               └── OrderMapper
@@ -74,7 +75,7 @@ project-root/
 ### この段階のポイント
 - shared/dto/ はまだほぼ空。画面が少ないので共有する必要がない
 - ビジネスロジックは各画面のserviceに書く
-- 同じDBテーブルを複数画面から使っても、shared/persistence/ のRecord/Mapperを共有するだけ
+- 同じDBテーブルを複数画面から使っても、shared/persistence/ のEntity/Mapperを共有するだけ
 - 無理に共通化しない
 
 ### この段階でやらないこと
@@ -94,7 +95,7 @@ project-root/
 | 同じ変換処理を2箇所以上にコピペ | shared/dto/ にマッピング用DTOを追加 |
 | 画面内のserviceが500行超え | 画面内でservice分割を検討 |
 | commonが肥大化 | カテゴリ別にサブフォルダを追加 |
-| DBテーブル数が増えてrecord/が見づらい | persistence/record/ 内をサブフォルダで分類 |
+| DBテーブル数が増えてentity/が見づらい | persistence/entity/ 内をサブフォルダで分類 |
 
 ### 目安
 - 画面数：4〜10
@@ -102,6 +103,7 @@ project-root/
 - 共通で使うデータ構造が出てきた
 
 ### 構成例（Stage 1からの差分を ★ で表示）
+
 ```text
 project-root/
 ├── AI_CONTEXT.md
@@ -158,11 +160,11 @@ project-root/
 │       │   ├── UserDto               # ★ 3画面以上で参照されるようになった
 │       │   └── OrderDto              # ★
 │       └── persistence/
-│           ├── record/
-│           │   ├── UserRecord
-│           │   ├── OrderRecord
-│           │   ├── OrderItemRecord   # ★ テーブルが増える
-│           │   └── ProductRecord     # ★
+│           ├── entity/
+│           │   ├── UserEntity
+│           │   ├── OrderEntity
+│           │   ├── OrderItemEntity   # ★ テーブルが増える
+│           │   └── ProductEntity     # ★
 │           └── mapper/
 │               ├── UserMapper
 │               ├── OrderMapper
@@ -178,7 +180,7 @@ project-root/
 │       │   └── OrderListServiceTest
 │       ├── orderDetail/              # ★
 │       │   └── OrderDetailServiceTest
-│       ├── orderConfirm/             # ★
+│       ├── orderConfirm/            # ★
 │       │   └── OrderConfirmServiceTest
 │       └── dashboard/                # ★
 │           └── DashboardServiceTest
@@ -192,7 +194,7 @@ project-root/
 - ただしDTOにロジックは持たせない（受け渡し用のデータ構造のみ）
 - 画面のserviceが大きくなったら画面内でservice分割（例：OrderConfirmService → OrderValidationService + OrderExecutionService）
 - commonも必要に応じてサブフォルダやファイルが増える
-- persistence/record/ が見づらくなったらサブフォルダ化を検討
+- persistence/entity/ が見づらくなったらサブフォルダ化を検討
 
 ### この段階でやらないこと
 - shared/ にビジネスロジック（service）を置くこと
@@ -217,6 +219,7 @@ project-root/
 - フロント・バック分離 or ビジネスルールの複雑化
 
 ### 構成例A：モノレポ化（フロント・バック分離）
+
 ```text
 project-root/
 ├── AI_CONTEXT.md
@@ -255,7 +258,7 @@ project-root/
 │   │   │   └── shared/
 │   │   │       ├── dto/
 │   │   │       └── persistence/
-│   │   │           ├── record/
+│   │   │           ├── entity/
 │   │   │           └── mapper/
 │   │   └── tests/
 │   └── shared/                       # ★ フロント・バック共通
@@ -268,6 +271,7 @@ project-root/
 ```
 
 ### 構成例B：DDD要素追加（ビジネスルール複雑化）
+
 ```text
 project-root/
 ├── AI_CONTEXT.md
@@ -283,7 +287,7 @@ project-root/
 │   ├── shared/
 │   │   ├── dto/
 │   │   └── persistence/
-│   │       ├── record/
+│   │       ├── entity/
 │   │       └── mapper/
 │   └── domain/                       # ★ 新規追加：ドメイン層
 │       ├── order/                    # ★ 注文ドメイン
@@ -306,7 +310,8 @@ project-root/
 ```
 
 ### 構成例Bの補足
-- domain/ のEntity はロジック（振る舞い）を持つ（DDD Entity）
+- domain/ のEntityはロジック（振る舞い）を持つ（DDD Entity）
+- persistence/entity/ はDBテーブル用、domain/ のEntityはビジネスロジック用で別物
 - 画面のserviceは domain/ のEntityやServiceを呼び出す形に変わる
 - 画面service → domain service → persistence の依存方向になる
 - この移行には開発フロー自体の見直しが伴う（画面単位 → ドメイン単位の設計検討）

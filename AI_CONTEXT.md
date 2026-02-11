@@ -21,7 +21,7 @@ AIが最初に読むファイル。プロジェクトの構成ルールと参照
 - ビジネスロジックは各画面の service に書く（共通化は慎重に）
 - 画面固有のデータ構造（Request/Response/その他モデル）は各画面の data/ に置く
 - 複数画面で共有するデータ構造は shared/dto/ に置く（ロジックは持たせない）
-- DBテーブルと1対1のデータ構造は shared/persistence/record/ に集約する
+- DBテーブルと1対1のデータ構造は shared/persistence/entity/ に集約する
 - DBアクセス処理は shared/persistence/mapper/ に集約する
 - 技術的な共通処理は common/ に置く
 - 詳細は doc/rules/PACKAGE_RULES.md を参照

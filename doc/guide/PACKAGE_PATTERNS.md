@@ -33,9 +33,9 @@ src/
           UserDto.java
           OrderDto.java
         persistence/
-          record/
-            UserRecord.java
-            OrderRecord.java
+          entity/
+            UserEntity.java
+            OrderEntity.java
           mapper/
             UserMapper.java
             OrderMapper.java
@@ -93,7 +93,7 @@ src/
       user.ts
       order.ts
     persistence/
-      record/
+      entity/
         user.ts
         order.ts
       repository/                    # DB操作（Prisma等）
@@ -135,9 +135,9 @@ src/
       user_dto.py
       order_dto.py
     persistence/
-      record/
-        user_record.py               # SQLAlchemy Model等
-        order_record.py
+      entity/
+        user_entity.py               # SQLAlchemy Model等
+        order_entity.py
       repository/
         user_repository.py
         order_repository.py
@@ -182,7 +182,7 @@ lib/
       user_dto.dart
       order_dto.dart
     persistence/
-      record/
+      entity/
       repository/
 test/
   app/

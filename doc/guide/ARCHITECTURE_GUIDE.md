@@ -29,8 +29,8 @@ AI開発フロー（doc/flow/）との相性を前提に整理している。
 ### Step 3：DB構成の判断
 | 状況 | 推奨 |
 |---|---|
-| 単一DB、テーブル数少ない | shared/persistence/ にRecord/Mapper集約 |
-| 単一DB、テーブル数多い | 同上、ただしRecord/Mapperをサブフォルダで分類 |
+| 単一DB、テーブル数少ない | shared/persistence/ にEntity/Mapper集約 |
+| 単一DB、テーブル数多い | 同上、ただしEntity/Mapperをサブフォルダで分類 |
 | 複数DB or 外部API依存 | persistence/ 内でDB/API別にパッケージ分け |
 
 ## アーキテクチャパターンとAI開発の相性
