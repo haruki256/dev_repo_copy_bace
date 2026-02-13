@@ -8,9 +8,18 @@
 - ビジネスロジックは service に書く
 - data/ にはリクエスト・レスポンス・その他モデルなど画面固有のデータ構造をすべて置く
 
+### src/app/ の「画面」の定義
+- app/ 配下の単位は「UI画面」に限らず「ユーザー/外部からの入口（entrypoint）単位」で切る
+- バックエンドAPIのみの場合：エンドポイント単位（userApi/, orderApi/）
+- CLIの場合：コマンド単位（importCmd/, exportCmd/）
+- バッチの場合：ジョブ単位（dailyReport/, dataSync/）
+- 本ドキュメントでは便宜上「画面」と表記するが、上記を含む
+
 ### src/common/（技術的共通処理）
 - utils/：汎用ユーティリティ（日付変換、文字列処理等）
 - constants/：全体で使用する定数
+- **commonに置けるもの：** 副作用なしの技術的な薄いユーティリティのみ
+- **commonに置かないもの：** I/O（DB、HTTP、ファイル等）や状態を持つ処理
 
 ### src/shared/（共有データ構造・DB永続化）
 - dto/：複数画面で共有するデータ構造（ロジックは持たない）
@@ -56,6 +65,36 @@ shared/persistence/entity/ に1テーブル1Entityで集約し、画面側は必
 - 「同じコードが3箇所以上」かつ「今後も増える見込み」→ 初めて共通化を検討
 - 共通化する場合は DESIGN.md に影響範囲を明記すること
 - 早すぎる共通化はしない
+
+## 依存の方向ルール
+- app/* → shared/* ：参照してよい
+- app/* → common/* ：参照してよい
+- shared/* → app/* ：**参照しない**
+- common/* → app/* ：**参照しない**
+- common/* → shared/* ：**参照しない**
+- persistence/entity/ を画面のcontrollerやレスポンスにそのまま露出しない。app側でdata/やdtoに変換して返す
+
+## 画面内が複雑な場合の分割ルール
+- 1URLの画面内にステップ・タブ・モーダル等の複数ユースケースがある場合、serviceをフォルダ化し、ユースケースごとにserviceファイルを分割する
+- パッケージ（画面）の単位は変えない
+- 分割の目安：service内に明確に異なる操作（入力/確認/検索等）が2つ以上ある場合
+- 命名：画面名 + ユースケース名 + Service（例：OrderEntryConfirmService）
+
+### 分割例
+```text
+app/orderEntry/
+  controller
+  service/                               # serviceをフォルダ化
+    OrderEntryInputService               # 入力ステップのロジック
+    OrderEntryConfirmService             # 確認ステップのロジック
+    OrderEntryCompleteService            # 完了ステップのロジック
+    OrderProductSearchService            # 商品検索モーダルのロジック
+  data/
+    OrderEntryInputRequest
+    OrderEntryConfirmRequest
+    OrderEntryCompleteResponse
+    OrderProductSearchData
+```
 
 ## DDD要素について
 - 本構成では簡易DDDとして「ユビキタス言語（GLOSSARY.md）」と「境界の判断基準（本ファイル）」のみ導入

@@ -96,6 +96,7 @@ project-root/
 | 画面内のserviceが500行超え | 画面内でservice分割を検討 |
 | commonが肥大化 | カテゴリ別にサブフォルダを追加 |
 | DBテーブル数が増えてentity/が見づらい | persistence/entity/ 内をサブフォルダで分類 |
+| 外部I/O（HTTP、ファイル、通知等）がDB以外に増えた | shared/infra/ の新設を検討 |
 
 ### 目安
 - 画面数：4〜10
@@ -195,6 +196,11 @@ project-root/
 - 画面のserviceが大きくなったら画面内でservice分割（例：OrderConfirmService → OrderValidationService + OrderExecutionService）
 - commonも必要に応じてサブフォルダやファイルが増える
 - persistence/entity/ が見づらくなったらサブフォルダ化を検討
+
+### 外部I/Oが増えた場合
+- DB以外の外部連携（HTTPクライアント、ファイル操作、通知、キャッシュ等）が増えてきたら shared/infra/ の新設を検討する
+- persistence/ はDB特化のまま維持し、DB以外の外部I/Oを infra/ に分離する
+- 今すぐ作る必要はなく、2つ以上の異なる外部I/Oが出てきた時点で検討する
 
 ### この段階でやらないこと
 - shared/ にビジネスロジック（service）を置くこと

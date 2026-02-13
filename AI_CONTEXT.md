@@ -17,13 +17,14 @@ AIが最初に読むファイル。プロジェクトの構成ルールと参照
 4. PACKAGE_PATTERNS.md を参照し、言語に合った構成を提案すること
 
 ## 構成の基本方針
-- 画面単位で src/app/ 配下にパッケージを切る
+- 入口（entrypoint）単位で src/app/ 配下にパッケージを切る（画面、APIエンドポイント、コマンド等）
 - ビジネスロジックは各画面の service に書く（共通化は慎重に）
 - 画面固有のデータ構造（Request/Response/その他モデル）は各画面の data/ に置く
 - 複数画面で共有するデータ構造は shared/dto/ に置く（ロジックは持たせない）
 - DBテーブルと1対1のデータ構造は shared/persistence/entity/ に集約する
 - DBアクセス処理は shared/persistence/mapper/ に集約する
-- 技術的な共通処理は common/ に置く
+- 技術的な共通処理は common/ に置く（副作用なしのユーティリティのみ）
+- 依存の方向：app → shared/common は可、逆方向は不可
 - 詳細は doc/rules/PACKAGE_RULES.md を参照
 
 ## 開発フロー
