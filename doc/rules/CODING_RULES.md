@@ -43,11 +43,17 @@ AI・開発者がコードを書く際に従うべきルールをまとめる。
 - `::UBIQ` ブロックとコード本体の間には**空行を1行**入れる
 - 新規ファイル作成時に、そのソースが関与するユビキタス言語をタグとして付与する
 
+### 上位概念・子概念のタグ付けルール
+
+子概念に該当するソースコードを作成・編集する際は、**必ず「上位概念のタグ」と「子概念のタグ」の両方を併記**します。
+これにより、上位概念のタグで完全一致検索（`-F`）した際に、関連する子概念のファイルもすべて影響範囲として抽出できるようになります。
+階層関係（どれが親か）の定義は `doc/rules/GLOSSARY.md` に従います。
+
 ### 例
 
 ```typescript
-// ::UBIQ[Domain1]
-// ::UBIQ[Domain2]
+// ::UBIQ[Domain1]           <- 上位概念（影響範囲検索のために必須）
+// ::UBIQ[Domain1Detail]     <- 子概念（詳細な絞り込み用）
 // [FeatureName]: 〇〇の処理
 
 function doSomething() {
@@ -56,16 +62,16 @@ function doSomething() {
 ```
 
 ```python
-# ::UBIQ[Domain1]
-# ::UBIQ[Domain2]
+# ::UBIQ[Domain1]            <- 上位概念
+# ::UBIQ[Domain1Detail]      <- 子概念
 # 〇〇の処理
 
 import os
 ```
 
 ```html
-<!-- ::UBIQ[Domain1] -->
-<!-- ::UBIQ[Domain2] -->
+<!-- ::UBIQ[Domain1] -->       <!-- 上位概念 -->
+<!-- ::UBIQ[Domain1Detail] --> <!-- 子概念 -->
 <!-- 〇〇コンポーネント -->
 
 <div>...</div>
