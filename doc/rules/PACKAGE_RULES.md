@@ -38,7 +38,7 @@
 ### shared/（共有リソース）
 - dto/：複数モジュール（3つ以上）から参照されるデータ構造（ロジックは持たない）
 - persistence/entity/：DB テーブルと 1:1 のデータ構造（DBを使用する場合）
-- persistence/repository/：DB アクセス処理（DBを使用する場合）
+- persistence/mapper/：DB アクセス処理（DBを使用する場合）
 - api (infra)/：外部APIやI/Oとの通信処理（外部サービスを使用する場合）
 
 ## モジュール内 data と shared/dto/ の使い分け

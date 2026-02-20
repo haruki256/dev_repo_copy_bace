@@ -9,7 +9,7 @@
 ## Stage 1：立ち上げ期
 
 ### 目安
-- 機能・画面数：1〜3
+- モジュール（画面/API）数：1〜3
 - 開発者：1〜2人
 - DBテーブル数：少ない
 
@@ -19,17 +19,18 @@
 project-root/
 ├── AI_CONTEXT.md
 ├── doc/
-│   ├── flow/
+│   ├── AI/
+│   │   └── flow/
 │   ├── project/
 │   ├── guide/
 │   └── rules/
 ├── src/ (or [Frontend]/, [Backend]/)
 │   ├── app/
-│   │   ├── [Feature 1]/             # 機能：1
+│   │   ├── [Endpoint 1]/             # モジュール：1
 │   │   │   ├── controller
 │   │   │   ├── service
 │   │   │   └── data/
-│   │   └── [Feature 2]/             # 機能：2
+│   │   └── [Endpoint 2]/             # モジュール：2
 │   │       ├── controller
 │   │       ├── service
 │   │       └── data/
@@ -50,9 +51,9 @@ project-root/
 ```
 
 ### この段階のポイント
-- shared/dto/ はまだほぼ空。機能が少ないので共有する必要がない
+- shared/dto/ はまだほぼ空。モジュールが少ないので共有する必要がない
 - ビジネスロジックは各モジュール（入力・画面）のserviceに書く
-- 同じDBテーブルを複数機能から使っても、shared/persistence/ のEntity/Mapperを共有するだけ
+- 同じDBテーブルを複数モジュールから使っても、shared/persistence/ のEntity/Mapperを共有するだけ
 - 無理に共通化しない
 
 ### この段階でやらないこと
@@ -68,15 +69,15 @@ project-root/
 ### 移行トリガー
 | 兆候 | アクション |
 |---|---|
-| 同じデータ構造を3機能以上から参照 | shared/dto/ に切り出す |
+| 同じデータ構造を3モジュール以上から参照 | shared/dto/ に切り出す |
 | 同じ変換処理を2箇所以上にコピペ | shared/dto/ にマッピング用DTOを追加 |
-| 機能内のserviceが500行超え | 機能内でservice分割を検討 |
+| パッケージ内のserviceが500行超え | パッケージ内でservice分割を検討 |
 | commonが肥大化 | カテゴリ別にサブフォルダを追加 |
 | DBテーブル数が増えてentity/が見づらい | persistence/entity/ 内をサブフォルダで分類 |
 | 外部I/O（HTTP、ファイル等）がDB以外に増えた | shared/infra/ の新設を検討 |
 
 ### 目安
-- 機能・画面数：4〜10
+- モジュール（画面/API）数：4〜10
 - 開発者：2〜5人
 - 共通で使うデータ構造が出てきた
 
@@ -86,19 +87,19 @@ project-root/
 project-root/
 ├── src/
 │   ├── app/
-│   │   ├── [Feature 1]/
-│   │   ├── [Feature 2]/
-│   │   ├── [Feature 3]/               # ★ 機能が増える
-│   │   ├── [Feature 4]/               # ★
-│   │   └── [Feature 5]/               # ★
+│   │   ├── [Endpoint 1]/
+│   │   ├── [Endpoint 2]/
+│   │   ├── [Endpoint 3]/               # ★ モジュールが増える
+│   │   ├── [Endpoint 4]/               # ★
+│   │   └── [Endpoint 5]/               # ★
 │   ├── common/
 │   │   ├── utils/
 │   │   │   ├── DateUtils
 │   │   │   └── StringUtils          # ★ utilsが増える
 │   │   └── constants/
 │   └── shared/
-│       ├── dto/                      # ★ 複数機能で使うDTOが出てくる
-│       │   ├── [SharedDtoA]          # ★ 3機能以上で参照されるようになった
+│       ├── dto/                      # ★ 複数モジュールで使うDTOが出てくる
+│       │   ├── [SharedDtoA]          # ★ 3モジュール以上から参照されるようになった
 │       │   └── [SharedDtoB]          # ★
 │       └── persistence/
 │           ├── entity/
@@ -113,9 +114,9 @@ project-root/
 ```
 
 ### この段階のポイント
-- shared/dto/ に「3機能以上から参照されるデータ構造」を切り出し始める
+- shared/dto/ に「3モジュール以上から参照されるデータ構造」を切り出し始める
 - ただしDTOにロジックは持たせない（受け渡し用のデータ構造のみ）
-- 機能のserviceが大きくなったら機能内でservice分割
+- パッケージのserviceが大きくなったらパッケージ内でservice分割
 - persistence/entity/ が見づらくなったらサブフォルダ化を検討
 
 ### 外部I/Oが増えた場合
@@ -135,12 +136,12 @@ project-root/
 | 兆候 | アクション |
 |---|---|
 | フロント・バック間でAPI契約の齟齬が多発 | モノレポ化（ワークスペース等）を検討 |
-| 同じビジネスルールが5機能以上のserviceに散在 | DDD要素の追加導入を検討 |
+| 同じビジネスルールが5パッケージ以上のserviceに散在 | DDD要素の追加導入を検討 |
 | チームが複数に分かれた | パッケージ間の依存方向を厳密に管理 |
-| 機能数が10を大幅に超えた | app/ 内をカテゴリでグループ化 |
+| モジュール数が10を大幅に超えた | app/ 内をカテゴリでグループ化 |
 
 ### 目安
-- 機能・画面数：10超
+- モジュール（画面/API）数：10超
 - 開発者：5人超
 - フロント・バック分離 or ビジネスルールの複雑化
 
@@ -180,4 +181,4 @@ project-root/
 - [ ] 移行の必要性をDESIGN.mdに記録した
 - [ ] 段階的移行の計画を立てた
 - [ ] AI_CONTEXT.md を更新した
-- [ ] 開発フローの変更が必要な場合、doc/flow/ を更新した
+- [ ] 開発フローの変更が必要な場合、doc/AI/flow/ を更新した

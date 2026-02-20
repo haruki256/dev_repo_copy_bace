@@ -39,8 +39,8 @@ Package 構成の詳細は doc/design/PACKAGE_STRUCTURE.md を参照。
 - 詳細は doc/rules/PACKAGE_RULES.md を参照
 
 ## 開発フロー
-- doc/flow/00_flow.md に従って進めること
-- 各ステップの詳細は doc/flow/step/ 配下を参照
+- doc/AI/flow/00_flow.md に従って進めること
+- 各ステップの詳細は doc/AI/flow/step/ 配下を参照
 
 ## ユビキタス言語
 - doc/rules/GLOSSARY.md に従うこと
@@ -52,7 +52,7 @@ Package 構成の詳細は doc/design/PACKAGE_STRUCTURE.md を参照。
 | doc/system/ARCHITECTURE.md | アーキテクチャ構成図 |
 | doc/system/TECH_STACK.md | 技術スタック詳細 |
 | doc/system/DATA_FLOW.md | データフロー図 |
-| doc/flow/00_flow.md | 開発フロー全体 |
+| doc/AI/flow/00_flow.md | 開発フロー全体 |
 | doc/rules/PACKAGE_RULES.md | 配置ルール |
 | doc/rules/CODING_RULES.md | コーディングルール（`::UBIQ` タグ含む） |
 | doc/rules/DEV_OPERATIONS.md | 開発運用ルール |

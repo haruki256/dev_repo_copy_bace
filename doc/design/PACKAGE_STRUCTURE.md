@@ -11,7 +11,7 @@
 [Project Root]/
 ├── AI_CONTEXT.md                           # AI向けコンテキスト定義
 ├── doc/                                    # 共通ドキュメント
-│   ├── flow/                               # 開発フロー（要件定義〜実装サイクル）
+│   ├── AI/                                 # AI開発フロー（要件定義〜実装サイクル）
 │   ├── project/                            # プロジェクト管理・各モジュールの設計資料
 │   ├── guide/                              # アーキテクチャやステージ移行設計ガイド
 │   └── rules/                              # コーディング・運用ルール
@@ -31,7 +31,7 @@
 │   │   ├── dto/                            # 共有型定義（3パッケージ以上から参照されるもの）
 │   │   ├── persistence/                    # データベースアクセス/外部保存層 (DB使用時)
 │   │   │   ├── entity/                     # DBテーブル等と1:1のデータモデル
-│   │   │   └── repository (mapper)/        # データ永続化処理
+│   │   │   └── mapper/                     # データ永続化処理
 │   │   └── config/                         # アプリ全体設定管理
 │   │
 │   └── [Entrypoint]                        # アプリケーションエントリポイント (main, index 等)
@@ -70,7 +70,7 @@ app/ ──→ shared/ ──→ common/
 | `app/[Endpoint]/data` | データ | 当該パッケージ内でのみ使用する型・構造体定義。 |
 | `shared/dto/` | 共有DTO | 3つ以上のパッケージから参照される、データ受け渡し専用の型・構造体。 |
 | `shared/persistence/entity/` | データモデル (DB用) | DBのテーブルと1:1で対応する状態。ロジックは持たない。 |
-| `shared/persistence/repository/`| リポジトリ (DB用) | データの保存・復元処理（`entity/` を読み書きし、返す）。 |
+| `shared/persistence/mapper/`    | マッパー (DB用) | データの保存・復元処理（`entity/` を読み書きし、返す）。 |
 
 ---
 
