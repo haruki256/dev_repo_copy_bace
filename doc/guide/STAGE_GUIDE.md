@@ -145,7 +145,41 @@ project-root/
 - 開発者：5人超
 - フロント・バック分離 or ビジネスルールの複雑化
 
-### 構成例：DDD要素追加（ビジネスルール複雑化）
+### 構成例A：フロント・バック分離（モノレポ / マルチレポ）
+
+フロントエンドとバックエンドでパッケージの切り方が異なる。
+
+| 対象 | ルートパッケージ | 分割単位 | 備考 |
+|------|----------------|---------|------|
+| バックエンド | `app/` | エンドポイント単位 | Stage 1 と同じ考え方 |
+| フロントエンド | `features/`（≒ `app/`） | 画面単位 | FWの慣習に合わせてよい |
+
+```text
+[組織]/
+├── [project]-frontend/              # フロントエンドリポジトリ
+│   ├── AI_CONTEXT.md
+│   ├── doc/                         # 共通ドキュメント（各リポジトリに配置）
+│   ├── src/
+│   │   ├── features/                # ≒ app/（UI 画面単位）
+│   │   ├── shared/                  # ≒ shared/（機能横断の共有）
+│   │   └── common/                  # ≒ common/（純粋ユーティリティ）
+│   └── [Config Files]
+│
+├── [project]-backend/               # バックエンドリポジトリ
+│   ├── AI_CONTEXT.md
+│   ├── doc/
+│   ├── src/
+│   │   ├── app/                     # エンドポイント単位
+│   │   ├── shared/
+│   │   └── common/
+│   └── [Config Files]
+│
+└── README.md
+```
+
+> **複数リポジトリに分かれる場合：** 各リポジトリにこのテンプレート構成を適用し、それぞれに `AI_CONTEXT.md` を持たせること。詳細は `doc/system/relations/README.md` および `doc/guide/PACKAGE_PATTERNS.md` を参照。
+
+### 構成例B：DDD要素追加（ビジネスルール複雑化）
 
 ```text
 project-root/
@@ -166,6 +200,7 @@ project-root/
 - 一気に移行しない。1ドメイン or 1パッケージずつ段階的に進める
 - 移行判断はDESIGN.mdに記録し、チームで合意を取る
 - AI_CONTEXT.md を更新し、構成変更をAIに認識させる
+- 複数リポジトリ構成の全体像は `doc/system/relations/RELATION_MAP.md` に記録する
 
 ---
 

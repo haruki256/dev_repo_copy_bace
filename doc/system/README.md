@@ -11,6 +11,7 @@
 | [ARCHITECTURE.md](ARCHITECTURE.md) | アーキテクチャ構成図（モジュール構成・全体設計） |
 | [DATA_FLOW.md](DATA_FLOW.md) | データの流れ |
 | [TECH_STACK.md](TECH_STACK.md) | 技術スタック詳細と前提知識 |
+| [relations/](relations/) | システム関連図・外部システム連携・複数リポジトリ構成方針 |
 
 ## 対象読者
 
