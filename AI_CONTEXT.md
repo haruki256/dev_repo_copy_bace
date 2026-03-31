@@ -50,7 +50,10 @@ Package 構成の詳細は doc/design/PACKAGE_STRUCTURE.md を参照。
 ## ユビキタス言語
 - doc/rules/GLOSSARY.md に従うこと
 
-## 参照ファイル一覧
+## 参照ファイル抜粋一覧
+
+毎回すべてのファイルを読む必要はありませんが、関連しそうな場合、必要に応じて以下のファイルを参照してください。
+
 | ファイル | 内容 |
 |---|---|
 | doc/system/SYSTEM_OVERVIEW.md | システム全体概要 |
