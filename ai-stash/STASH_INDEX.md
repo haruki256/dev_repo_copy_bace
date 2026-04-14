@@ -1,4 +1,4 @@
-# MEMORY.md
+# STASH_INDEX.md
 
 AIが管理するポインタインデックス。情報そのものは書かない。
 

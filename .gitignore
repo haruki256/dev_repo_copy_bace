@@ -23,6 +23,6 @@ target/
 # Logs
 *.log
 
-# AI Memory（個人ごとの作業文脈。git管理外）
-memory/hot/
-memory/cold/
+# AI Stash（個人ごとの作業文脈。git管理外）
+ai-stash/hot/
+ai-stash/cold/
