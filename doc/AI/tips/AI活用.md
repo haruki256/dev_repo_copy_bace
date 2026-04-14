@@ -26,54 +26,83 @@ AIは選択肢の整理・調査・整合性チェックに強い。しかし「
 
 ### 背景：AGENTS.md が共通規格になった
 
-2026年現在、AI エージェント向けのコンテキストファイルは **AGENTS.md** が事実上の共通規格となっている（Linux Foundation 傘下の Agentic AI Foundation が管理、60,000以上の OSS プロジェクトで採用）。Claude Code / GitHub Copilot / OpenAI Codex / Cursor / Cline 等の主要ツールが AGENTS.md を自動読み込みする。（Claude Code は CLAUDE.md がなければフォールバックのはず。）
+2026年現在、AI エージェント向けのコンテキストファイルは **AGENTS.md** が事実上の共通規格となっている（Linux Foundation 傘下の Agentic AI Foundation が管理、60,000以上の OSS プロジェクトで採用）。
 
-### AGENTS.md に内容を集約、ツール固有ファイルはポインタのみ
+ただし、**AGENTS.md の自動読み込み対応状況はツールによって異なる**。「共通規格＝全ツールが自動で読む」ではない点に注意が必要。
 
-現在の主要AIツールはほぼ同等の機能を持つため、ツール固有の設定ファイルに同じ情報を書く必要はない。実質的な指示はすべて AGENTS.mdに書き、CLAUDE.md や copilot-instructions.mdは「AGENTS.md を読め」というポインタとして残す。対応できない指示はAI側が無視するだけ。
+### 自動読み込みの実態（2026年4月時点）
+
+各ツールには「自動でコンテキストに注入されるファイル」がそれぞれ決まっている。自動注入されるファイルの内容は毎ターン（APIリクエストごとに）コンテキストに含まれるため、確実に参照される。一方、自動注入されないファイルは AI が能動的に読みに行く必要があり、読まれない可能性がある。
+
+| ツール | 自動読み込みファイル | AGENTS.md 自動読み込み | 備考 |
+|---|---|---|---|
+| **Claude Code** | CLAUDE.md | **未対応** | Issue #6235 で要望中（3,200+アップボート）。CLAUDE.md に「AGENTS.md を読め」と書いても読まれない場合がある（モデルの判断依存） |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | **条件付き** | Coding Agent は対応済。VS Code Chat は `chat.useAgentsMdFile: true` の設定が必要（デフォルト off）。Code Review は未対応 |
+| **Gemini CLI** | GEMINI.md | **条件付き** | デフォルトは GEMINI.md のみ。`settings.json` の `context.fileName` に明示指定が必要 |
+| **Cursor** | `.cursorrules` / `.cursor/rules` | **完全対応** | 設定不要。サブディレクトリのネストもサポート |
+| **OpenAI Codex** | `codex.md` / AGENTS.md | **完全対応** | AGENTS.md の生みの親。階層的な読み込みをサポート |
+
+**重要な教訓：** 「AGENTS.md を読め」というポインタだけをツール固有ファイルに書く運用では、ポインタを読んでも AGENTS.md を実際に開かないケースが発生する。これはバグではなく仕様（AIが能動的に読むかどうかはモデルの判断に依存する）。
+
+### コンテキストファイルの運用方針
+
+上記の実態を踏まえ、以下の方針を採用する。
+
+**現在の方針：AGENTS.md の内容を各ツールの自動読み込みファイルに丸ごと入れる（各ファイルが自己完結）。**
+
+AGENTS.md の自動読み込みが主要ツールで未対応または条件付きである以上、「AGENTS.md を読め」というポインタ方式では指示が読まれないリスクがある。確実性を最優先し、各ツールの自動読み込みファイルに指示を直接記載する。
 
 ```
-旧構成:
-AGENTS.md（共通）+ CLAUDE.md（Claude固有の指示あり）+ copilot-instructions.md（Copilot固有）
+現在の方針（全ファイル自己完結）:
+AGENTS.md              — 共通規格としての正本（Cursor, Codex 等の対応ツール向け）
+CLAUDE.md              — AGENTS.md と同じ内容を記載（Claude Code 向け）
+GEMINI.md              — AGENTS.md と同じ内容を記載（Gemini CLI 向け）
+copilot-instructions.md — AGENTS.md と同じ内容を記載（GitHub Copilot 向け）
 
-新構成:
-AGENTS.md（すべてここ）+ CLAUDE.md（→AGENTS.mdへの誘導のみ）+ copilot-instructions.md（同左）
+将来の方針（各ツールが AGENTS.md を自動読み込みに対応した場合）:
+AGENTS.md              — すべてここに集約
+CLAUDE.md              — 「AGENTS.md を読め」ポインタのみ
+GEMINI.md              — 同上
+copilot-instructions.md — 同上
 ```
 
-### AGENTS.md は毎ターン再注入される
-
-AGENTS.md はセッション開始時に1回読まれるだけでなく、ユーザーが新しいメッセージを送るたびに再注入される。会話が長くなっても指示が有効であり続ける理由がこれだ。
-
-そのため：
-- **AGENTS.md は小さく保つ**（大きいと毎ターンのコストが膨らむ）
-- **「何を知っているか」ではなく「何をどこで調べるか」を書く地図として設計する**
-- **行動規範**（コーディング規約、禁止事項）を書いておくとAIの自律作業時の品質担保になる
-- チーム全員のAIが同じ前提・同じ行動規範で動く。毎セッション冒頭で説明し直す手間が消える
+**将来のポインタ方式への移行条件：** 各ツールが AGENTS.md の自動読み込みに正式対応した時点で、そのツールの固有ファイルをポインタ方式に切り替える。移行はツール単位で段階的に行う。
 
 ### 各ファイルの役割分担
 
-| ファイル | 置き場所 | 自動読み込み | 置く内容 |
+| ファイル | 置き場所 | 自動読み込み | 現在の運用 |
 |---|---|---|---|
-| **AGENTS.md** | プロジェクトルート | 全ツール | プロジェクト概要、技術スタック、コーディング規約、参照ファイル一覧、AI 必読ルール、セッション管理方針、サブエージェント定義 |
-| **CLAUDE.md** | プロジェクトルート | Claude Code | 「AGENTS.md を読め」というポインタのみ |
-| **copilot-instructions.md** | .github/ | GitHub Copilot | 「AGENTS.md を読め」というポインタのみ |
+| **AGENTS.md** | プロジェクトルート | Cursor, Codex は自動。他は条件付きまたは未対応 | 共通規格としての正本。内容の原本はここで管理する |
+| **CLAUDE.md** | プロジェクトルート | Claude Code（毎ターン自動注入） | AGENTS.md の内容を丸ごと記載 |
+| **GEMINI.md** | プロジェクトルート | Gemini CLI（毎ターン自動注入） | 同上 |
+| **copilot-instructions.md** | .github/ | GitHub Copilot | 同上 |
+
+### 自動読み込みファイルの設計指針
+
+自動読み込みファイル（CLAUDE.md 等）は毎ターンのコンテキストに含まれるため、以下を意識する：
+
+- **小さく保つ**（大きいと毎ターンのコストが膨らむ）
+- **「何を知っているか」ではなく「何をどこで調べるか」を書く地図として設計する**
+- **行動規範**（コーディング規約、回答スタイル、禁止事項）を書いておくとAIの自律作業時の品質担保になる
+- チーム全員のAIが同じ前提・同じ行動規範で動く。毎セッション冒頭で説明し直す手間が消える
 
 ### 現在の構成（本プロジェクト）
 
 ```
 xx/
-├── AGENTS.md ← 共通コンテキスト（すべてここ）
-├── CLAUDE.md ← Claude Code → AGENTS.md へのポインタ
-├── .github/copilot-instructions.md ← Copilot → AGENTS.md へのポインタ
+├── AGENTS.md                       ← 正本（内容の原本管理先）
+├── CLAUDE.md                       ← Claude Code 用（AGENTS.md と同内容）
+├── GEMINI.md                       ← Gemini CLI 用（AGENTS.md と同内容）
+├── .github/copilot-instructions.md ← Copilot 用（AGENTS.md と同内容）
 └── doc/AI/
-    ├── AI_CONTEXT.md ← 旧ファイル（AGENTS.md に移行済み。参照が残っている場合の互換用）
-    └── AI活用メソッド.md ← この資料
+    └── AI活用メソッド.md              ← この資料
 ```
 
 ### 更新ルール
 
-- プロジェクト共通の情報を変更する場合 → **AGENTS.md のみ更新**。全ツールが自動読み込みするので各設定ファイルの変更不要
-- 新しい AI ツールを追加する場合 → AGENTS.md を自動読み込みするので、ツール固有の設定ファイル（ポインタ）を作ればよい
+- 指示内容を変更する場合 → **AGENTS.md（正本）を更新し、各ツールの自動読み込みファイルにも同じ変更を反映する**
+- 新しい AI ツールを追加する場合 → そのツールの自動読み込みファイルを作成し、AGENTS.md の内容を丸ごと記載する
+- あるツールが AGENTS.md の自動読み込みに対応した場合 → そのツールの固有ファイルをポインタ方式に切り替える
 
 ---
 
