@@ -22,3 +22,7 @@ target/
 
 # Logs
 *.log
+
+# AI Memory（個人ごとの作業文脈。git管理外）
+memory/hot/
+memory/cold/

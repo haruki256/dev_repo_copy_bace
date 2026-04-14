@@ -1,104 +1,51 @@
-# プロジェクトコンテキスト
+# xx-service ワークスペース
 
 ## このファイルについて
-AIが最初に読むファイル。プロジェクトの構成ルールと参照先をまとめる。
+
+複数リポジトリをまとめたワークスペースの設定ファイル。
+
 **このファイルの内容はセッション中常にコンテキストに保持すること。**
 
----
+>**`xx/AGENTS.md`** を最初に読むこと。プロジェクトのルール・規約・参照先はそちらに記載。
 
-## AI 必読ルール
+## リポジトリ構成
 
-> **以下のルールはすべてのコード修正・ドキュメント修正時に必ず守ること。**
+| リポジトリ | 役割 | 主な参照場面 |
+|---|---|---|
+| xx/ | エンドユーザー向け Web アプリ（**サービスメイン**） | 常時 |
+| xx-batch/ |  |  |
+| yyy/ |  |  |
 
-1. **ベース**：ユーザーは日本人です。コードコメントや、回答は必要に応じて英語も併記して構いませんが、**日本語を主とすること**。
-2. **回答スタイル**：回答時には、過剰な横文字を避け、わかりやすく丁寧な説明を心がけると、ともに、関連する資料やドキュメントがないかを確認し正確な回答を行うこと。
-3. **ソース修正時**：コード修正時には、指示がない場合は既存のコメント、処理を勝手に省略せずに、**既存のスタイルや構成を尊重して修正すること**。ただし、リファクタリングや、指示があった場合は、コードの可読性や保守性を向上させるために、必要に応じてスタイルの統一や構成の見直しを行うことができます。
-4. **ユビキタス言語**: `doc/rules/GLOSSARY.md` で定義されたユビキタス言語による統一を徹底すること。新用語が発生したら分類して GLOSSARY.md に追記し、**用語ファイルを分割したり別ディレクトリに作成しないこと**。
-5. **コーディング規約**: `doc/rules/CODING_RULES.md` に従うこと（`::UBIQ` タグの付与含む）
-6. **開発運用ルール**: `doc/rules/DEV_OPERATIONS.md` に従うこと
-7. **アーキテクチャ遵守**: `doc/guide/ARCHITECTURE_GUIDE.md` を読み、機能・画面単位パッケージ構成を守ること
-8. **`::UBIQ` 影響タグ維持**: ソースコード作成・修正時にファイルが関与するユビキタス言語をタグとして維持・追加すること（CODING_RULES.md 参照）
-9. **PACKAGE_STRUCTURE.md 更新**: 開発系ファイル/フォルダの追加・削除・移動時に `doc/design/PACKAGE_STRUCTURE.md` を更新すること
-10. **ドキュメント目次更新**: `doc/` 配下にドキュメントを追加・削除した場合は、必ず `doc/README.md` (目次) を更新すること
-11. **更新タイミング確認**: ファイル修正時、`doc/guide/UPDATE_TIMING.md` の **タスク別早見表** を参照し、連動して更新が必要なドキュメントを確認すること
-12. **DB設計維持**: テーブル追加・カラム変更時は `doc/design/DB_DESIGN.md` を更新すること
-13. **品質チェック**: コード修正後は Lint & Test を実行すること（例: `npm run lint` / `npm run test`）
-14. **作業対象のリポジトリはユーザーと認識を合わせる**
-15. **ドキュメントとソースが矛盾する場合はソースを正とする**
-16. **/memoryを活用しているか、コンテキストを最適化しているか、サブエージェントを適切に利用できているか、AGENTS.md の内容を活用しているか常に意識する**
+## 作業ルール
 
----
-
-## プロジェクト概要
-- プロジェクト名：[Project Name]
-- 使用言語・FW：[Programming Language] ([Framework])
-- 概要：[Project Description] を提供するアプリケーション
-
-## プロジェクト構成
-本プロジェクトのベース構成は、`doc/guide/STAGE_GUIDE.md` の **Stage 1（立ち上げ期）** を標準としています。必要に応じてフロントエンドとバックエンドが分離したマルチレポ（Stage 3）構成にも対応します。プロジェクトの現在の Stage に応じた構成を採用してください。
-
-- **src/** — アプリケーションのルートディレクトリ
-
-Package 構成の詳細は doc/design/PACKAGE_STRUCTURE.md を参照。
-
-### 基本方針 (Stage 1 ベース)
-- [エンドポイント・画面単位]で `app/` 配下にパッケージを切る（controller, service, data 等）
-- 共有リソース（エンティティ、DTOなど）は `shared/`、副作用なしユーティリティは `common/`
-- 依存の方向：`app` → `shared` / `common` は可、逆方向は不可
-- 詳細は doc/rules/PACKAGE_RULES.md を参照
+1. **作業対象のリポジトリはユーザーと認識を合わせる**
+2. **xx/AGENTS.md のルールに従う**
+3. **ドキュメントとソースが矛盾する場合はソースを正とする**
+4. **/memoryを活用しているか、コンテキストを最適化しているか、サブエージェントを適切に利用できているか、AGENTS.md の内容を活用しているか常に意識する**
 
 ## 開発フロー
-- doc/AI/flow/00_flow.md に従って進めること
-- 各ステップの詳細は doc/AI/flow/step/ 配下を参照
 
-## ユビキタス言語
-- doc/rules/GLOSSARY.md に従うこと
+- `xx/doc/AI/flow/00_flow.md` に従って進めること
+- 各ステップの詳細は `xx/doc/AI/flow/step/` 配下を参照
 
 ## タスク別プリフェッチ
 
 作業開始前にドキュメント → 実コードの順で先読みすること。
 
-- 全体フロー把握 → `doc/system/SYSTEM_OVERVIEW.md` + `doc/system/DATA_FLOW.md`
+- xxx関連 → `xx/doc/dev-doc/システム情報/xxx.md` → `xxx/zzz/`
+- yyy関連 → `yy/doc/dev-doc/システム情報/yyy資料.md` → `yy/zzz/`
+- 全体フロー把握 → `xx/doc/dev-doc/システム情報/全体像.md` + `aaa.md`
 
 ### 作業時
 
-- バグ修正 → `memory/hot/known-issues.md` → 関連テスト → 対象ソース
-- 設計作業 → `memory/cold/architecture.md` → `doc/system/ARCHITECTURE.md` → 関連する設計ファイル
-- 機能追加 → `doc/guide/ARCHITECTURE_GUIDE.md` → 既存の類似機能の実装 → `doc/design/PACKAGE_STRUCTURE.md`
-- DB変更 → `doc/design/DB_DESIGN.md` → 対象テーブルを使用しているソース
-- ドキュメント整備 → `doc/README.md`（目次）→ `doc/guide/UPDATE_TIMING.md`
-
-## 主要参照ファイル一覧
-
-毎回すべてのファイルを読む必要はありませんが、関連しそうな場合、必要に応じて以下のファイルを参照してください。
-
-また、/memory/MEMORY.md も参照・更新してください。
-
-ファイル : 内容
-doc/system/SYSTEM_OVERVIEW.md : システム全体概要
-doc/system/ARCHITECTURE.md : アーキテクチャ構成図
-doc/system/TECH_STACK.md : 技術スタック詳細
-doc/system/DATA_FLOW.md : データフロー図
-doc/system/relations/RELATION_MAP.md : システム関連図・連携一覧
-doc/system/relations/README.md : システム関連フォルダ説明・マルチリポジトリ方針
-doc/AI/flow/00_flow.md : 開発フロー全体
-doc/rules/PACKAGE_RULES.md : 配置ルール
-doc/rules/CODING_RULES.md : コーディングルール（`::UBIQ` タグ含む）
-doc/rules/DEV_OPERATIONS.md : 開発運用ルール
-doc/rules/GLOSSARY.md : 用語集
-doc/design/PACKAGE_STRUCTURE.md : パッケージ構成詳細（全ファイル一覧）
-doc/design/DB_DESIGN.md : DB設計（テーブル定義・ER図）
-doc/guide/ARCHITECTURE_GUIDE.md : アーキテクチャ選定
-doc/guide/PACKAGE_PATTERNS.md : モノリス/分離別構成例
-doc/guide/STAGE_GUIDE.md : 成長段階の移行ガイド
-doc/guide/UPDATE_TIMING.md : ファイル更新タイミングマトリクス
-
----
+- バグ修正 → `memory/known-issues.md` → 関連テスト → 対象ソース
+- 設計作業 → `memory/architecture.md` → 関連する案件設計ファイル
+- 機能追加 → `xx/doc/design/architecture.md` → 既存の類似機能
 
 ## サブエージェント定義
 
-### code-investigator
-指定されたソースコードやドキュメントを調査する。
+### repo-investigator
+指定されたリポジトリのソースコードを調査する。
 調査結果は要約して報告する。コードの修正は行わない。
 
 ### design-reviewer
@@ -116,7 +63,7 @@ doc/guide/UPDATE_TIMING.md : ファイル更新タイミングマトリクス
 - 大きな調査結果やツール出力はファイルに保存し、要約だけをコンテキストに残す
 - ファイルや過去セッションの情報を取得する際は、grep で部分取得する・ドキュメント編集時には全文を読むなど、状況に応じて最適な方法を選択する
 
-## メモリ運用
+## メモリ（3層メモリ構造）
 
 ### memory/ とは
 AIが自由に作成・編集・管理する作業用ストレージ。ユーザーは直接編集しない。
@@ -141,7 +88,7 @@ AIが自由に作成・編集・管理する作業用ストレージ。ユーザ
 以下のタイミングでメモリに保存する：
 - **設計判断があったとき**: なぜその方法を選んだか、却下した案とその理由
 - **既知の問題を発見したとき**: バグ、制約、回避策
-- **調査で重要な事実が判明したとき**: データフロー、API仕様の実態等
+- **調査で重要な事実が判明したとき**: リポジトリ横断のデータフロー、API仕様の実態等
 - **ユーザーから明示的に「覚えておいて」と指示があったとき**
 - **コンテキストから消えそうだが後で必要になりそうな情報があるとき**
 
