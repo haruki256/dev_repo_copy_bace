@@ -56,6 +56,9 @@ AIとの協調開発を進める際の手順とテンプレートです。
 - [00_flow.md](AI/flow/00_flow.md) - 開発フロー全体の流れ
 - `AI/flow/step/` - 各ステップ（要件定義〜実装〜テスト）の詳細ドキュメント
 - `AI/flow/template/` - 各種ドキュメントのテンプレート（DESIGN.md, REQUIREMENTS.md 等）
+- `AI/tips/`
+  - [agent-context-entropy.md](AI/tips/agent-context-entropy.md) - AIエージェントにおけるコンテキストエントロピーと対策
+  - [llm-instruction-degradation.md](AI/tips/llm-instruction-degradation.md) - AIモデルのコンテキスト限界と指示追従性の劣化
 
 ---
 

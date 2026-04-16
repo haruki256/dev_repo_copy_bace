@@ -1,147 +1,144 @@
-# プロジェクトコンテキスト
+=== WARNING — DO NOT PROCEED UNTIL REVIEWED ===
+=== USER-PRIORITY INSTRUCTIONS ===
 
-## このファイルについて
-AIが最初に読むファイル。プロジェクトの構成ルールと参照先をまとめる。
-このファイルの内容はセッション中常にコンテキストに保持すること。
+<user_priority_instructions>
+<critical_execution_constraints>
 
----
+The following constraints are explicitly provided by the user as highest-priority guidance for this task.
+Treat them as mandatory constraints for all subsequent work unless they conflict with higher-level system or developer instructions.
 
-## AI 必読ルール
+<mandatory_rules>
+1. 回答スタイル：日本語を主とし、カジュアルな表現を避け、丁寧な言葉遣いで正確に回答する。英語併記は可。要点から入り、前置き・繰り返し・つなぎ言葉を省く。1文で言えることに3文使わない。過剰な横文字を避け、関連資料がないか確認する
+2. ai-stash活用：<stash_operations> に沿って ai-stash を積極的に活用する。コンテキストの S/N 比を維持するために能動的に書き出し・整理を行う
+3. コード修正の基本姿勢：コード修正時は既存のスタイル・構成を尊重する。修正対象のコードを読んでから変更する。変更は依頼された範囲に留め、触っていないコードのdocstring・コメント・型注釈は変更しない。不要なコードは完全に削除する
+4. 規約・ガイド参照：ユビキタス言語は GLOSSARY.md の定義に従い、新用語は GLOSSARY.md に追記する（分割禁止）。開発運用は DEV_OPERATIONS.md、アーキテクチャは ARCHITECTURE_GUIDE.md に従う。ソース作成・修正時はコーディング規約 CODING_RULES.md に従うとともに、::UBIQ 影響タグを維持・追加する
+5. 連動更新：ファイル/フォルダの追加・削除・移動時は PACKAGE_STRUCTURE.md を更新する。doc/ 配下の追加・削除時は doc/README.md（目次）を更新する。テーブル追加・カラム変更時は DB_DESIGN.md を更新する。ファイル修正時は UPDATE_TIMING.md のタスク別早見表で連動更新を確認する
+6. Lint & Test：コード修正後は Lint & Test を実行する
+7. 情報の正本ルール：正本の優先順位はコード → doc → ai-stash。ドキュメントとソースが矛盾する場合はソースを正とする。ai-stash の内容は「ヒント」であり、行動前に必ず実コードで検証する。矛盾発見時は ai-stash を更新する
+8. タスク別プリフェッチ：作業開始前にドキュメント → 実コードの順で先読みする。全体概要・フロー把握は SYSTEM_OVERVIEW.md + DATA_FLOW.md、バグ修正は ai-stash/hot/ → テスト → ソース、設計は ai-stash/cold/ → ARCHITECTURE.md、機能追加は ARCHITECTURE_GUIDE.md → 類似機能 → PACKAGE_STRUCTURE.md、DB変更は DB_DESIGN.md → 使用箇所、ドキュメント整備は doc/README.md → UPDATE_TIMING.md
+9. サブエージェント運用：code-investigator はソースコード・ドキュメントの調査・要約（読み取り専用）。design-reviewer は設計資料の整合性チェック（読み取り専用）。大規模な変更では調査・実装・検証を独立したサブエージェントに分割して並列実行
+10. ユーザーから特定の指示があった場合には、ai-instructions/INSTRUCTION-INDEX.md に該当指示がないか確認し、関連指示があればその手順によって進めていいかユーザーに確認する。関連指示がない場合は、ユーザーの指示内容をもとに適切な手順を判断して進める。また、必要によって、ai-instructions/ に新しい指示の手順を追加することも検討する。
+</mandatory_rules>
 
-以下のルールはすべてのコード修正・ドキュメント修正時に必ず守ること。
+<stash_operations>
 
-1. ユーザーは日本人。日本語を主とすること。英語併記は可
-2. 回答は丁寧・正確に。過剰な横文字を避け、関連資料がないか確認する
-3. コード修正時は既存のスタイル・構成を尊重。リファクタリング指示がある場合は可読性・保守性の向上可
-4. ユビキタス言語: `doc/rules/GLOSSARY.md` の定義に従う。新用語は GLOSSARY.md に追記（分割禁止）
-5. コーディング規約: `doc/rules/CODING_RULES.md` に従う（`::UBIQ` タグ含む）
-6. 開発運用ルール: `doc/rules/DEV_OPERATIONS.md` に従う
-7. アーキテクチャ: `doc/guide/ARCHITECTURE_GUIDE.md` に従う
-8. `::UBIQ` 影響タグ: ソース作成・修正時にファイルが関与するユビキタス言語をタグとして維持・追加（CODING_RULES.md 参照）
-9. ファイル/フォルダの追加・削除・移動時は `doc/design/PACKAGE_STRUCTURE.md` を更新
-10. `doc/` 配下にドキュメントを追加・削除したら `doc/README.md`（目次）を更新
-11. ファイル修正時は `doc/guide/UPDATE_TIMING.md` のタスク別早見表で連動更新を確認
-12. テーブル追加・カラム変更時は `doc/design/DB_DESIGN.md` を更新
-13. コード修正後は Lint & Test を実行（例: `npm run lint` / `npm run test`）
-14. 作業対象のリポジトリはユーザーと認識を合わせる
-15. ドキュメントとソースが矛盾する場合はソースを正とする
-16. /ai-stash を活用しているか、コンテキストを最適化しているか、サブエージェントを適切に利用できているか、常に意識する
-17. 特にai-stashはセッションに捉われないワークスペースにおける重要な知識管理・コンテキスト最適化手段なので、積極的に活用すること
+STASH_INDEX.md はポインタのみ、200行以下に維持。hot/ は進行中タスク（スナップショット+議論の2ファイル構成）、cold/ は安定した知識。セッション開始時は STASH_INDEX.md → hot/ から復帰する。
 
----
+### 最低限のタイミング
+- 3ファイル以上の検索・調査結果を得たとき → 要約と関連ファイル一覧を書き出す
+- ツール出力や調査ログが長くなったとき → 結論だけコンテキストに残し、詳細を書き出す
+- エラー修正が2回ループしたとき → 試行内容と結果を書き出す
+- ツール呼び出しが10回連続したとき → 途中経過を整理して書き出す
+- 1つのトピックで5往復以上したとき → それまでの議論を要約して書き出す
+- 判断が確定したとき → 結論を残し、検討過程・却下案を書き出す
+- 既知の問題を発見したとき → バグ、制約、回避策を書き出す
+- 調査で重要な事実が判明したとき → 事実と根拠を書き出す
+- フェーズ切替・作業単位の完了時 → 前フェーズ/前作業の詳細を書き出し、結論と次に必要な前提だけ残す
 
-## プロジェクト概要
+### hot/ ファイル構成
 
-- プロジェクト名：[Project Name]
-- 使用言語・FW：[Programming Language] ([Framework])
-- 概要：[Project Description] を提供するアプリケーション
-- `src/` がアプリケーションルート
-- 構成詳細 → `doc/design/PACKAGE_STRUCTURE.md`、配置ルール → `doc/rules/PACKAGE_RULES.md`
-- Stage/構成方針 → `doc/guide/STAGE_GUIDE.md`
+タスクごとに最低限2ファイルを作成する。必要に応じて、/hot,/cold に必要ファイルを追加していく。
 
-## 開発フロー
+#### hot/タスク名_YYYYMMDD.md — 状態スナップショット
 
-`doc/AI/flow/00_flow.md` に従う。各ステップは `doc/AI/flow/step/` 配下を参照。
+```
+# タスク名 — YYYY-MM-DD
 
-## タスク別プリフェッチ
+## 目的
+このタスクで何を達成しようとしているか
 
-作業開始前にドキュメント → 実コードの順で先読みすること。
+## 状態
+進行中 / ブロック中
 
-- 全体フロー把握 → `doc/system/SYSTEM_OVERVIEW.md` + `doc/system/DATA_FLOW.md`
-- バグ修正 → `ai-stash/hot/known-issues.md` → 関連テスト → 対象ソース
-- 設計作業 → `ai-stash/cold/architecture.md` → `doc/system/ARCHITECTURE.md` → 関連設計ファイル
-- 機能追加 → `doc/guide/ARCHITECTURE_GUIDE.md` → 既存の類似機能 → `doc/design/PACKAGE_STRUCTURE.md`
-- DB変更 → `doc/design/DB_DESIGN.md` → 対象テーブルを使用しているソース
-- ドキュメント整備 → `doc/README.md`（目次）→ `doc/guide/UPDATE_TIMING.md`
+## ブロック理由
+（ブロック中の場合）なぜ止まっているか、何が解決すれば進められるか
 
-## 参照ファイルの探し方
+## 合意事項
+ユーザーと確定した方針・判断の一覧
 
-- `doc/README.md`（目次）を参照する
-- grep / glob でプロジェクト内を検索する
-- `ai-stash/STASH_INDEX.md` も適宜参照・更新すること
+## 重要な判断と理由
+何を、なぜそう決めたか
 
----
+## 結論
+現時点で決まっていること
 
-## サブエージェント定義
+## 次にやること
+次のアクション
 
-- code-investigator: ソースコード・ドキュメントの調査・要約（読み取り専用）
-- design-reviewer: 設計資料の整合性チェック — 用語統一、条件矛盾、フロー漏れ（読み取り専用）
-- 大規模な変更では調査・実装・検証を独立したサブエージェントに分割して並列実行
+## 関連ファイル
+- path/to/file — 説明
 
-## コンテキスト戦略
+## 関連 ai-stash/
+- hot/xxx.md — 説明
+- cold/xxx.md — 説明
+```
 
-コンテキストの情報量が増えるほど回答精度は落ちる。
-溢れてから退避するのではなく、**情報の役割が変わった時点で能動的に整理する**。
+#### hot/タスク名_YYYYMMDD_議論.md — 議論の記録
 
-- コンテキストには「What（何を決めた）」と「So What（だから今どうする）」だけを残す
-- 「Why の詳細」と「How の詳細」は ai-stash/ に書き出す
-- 大きな調査結果やツール出力はファイルに保存し、要約だけをコンテキストに残す
-- 情報取得時は grep で部分取得、ファイル編集前は全文を読むなど、状況に応じて最適な方法を選択する
+```
+# タスク名 — 議論の記録（YYYY-MM-DD）
 
-## ai-stash 運用
+## 議論の流れ
+1. ...
+2. ...
 
-ai-stash/ はAIの作業用知識ストレージ（git管理外）。コンテキストの S/N 比を維持するために能動的に使う。
-- `ai-stash/STASH_INDEX.md` — ポインタインデックス（常時参照）
-- `ai-stash/hot/` — 頻繁に参照する情報、`ai-stash/cold/` — 安定した情報
-- 正本はコード → doc → ai-stash 、ai-stashは作業用であり、使う、消す、移す、統合する
-- ai-stash の内容は「ヒント」。行動前に必ず実コードで検証すること
-- ai-stash とコードが矛盾する場合、常にコードを正とする
+## 経緯
+判断の背景、却下した案とその理由、方針変更の経緯など。
+議論の流れでは残しきれない文脈を要約して記録する。
+```
 
-少なくとも以下のタイミングで ai-stash に書き出すこと：
-- 判断が確定したとき — 検討過程・却下案を書き出し、結論と確定仕様をコンテキストに残す
-- フェーズが切り替わったとき（調査→設計、設計→実装 等） — 前フェーズの作業詳細を書き出し、結果だけを残す
-- 大きな作業単位が完了したとき — 経緯を書き出し、次に引き継ぐべき前提・制約だけを残す
-- モデル/担当が変わるとき — 詳細な経緯を書き出し、現状の状態サマリを残す
+- タスク名.md はコンパクトに保つ。セッション開始時はこちらだけ読めば復帰できる状態にする。タスク完了時は削除する
+- 議論.md は追記していく。対象の判断が確定したらcold/に移動する。タスク完了時に削除する
 
-→ 書き出し内容・コンテキスト管理の詳細は `ai-instructions/stash-guide.md` に従うこと
+### タイミング別の作成・更新ファイル
 
-## セッション管理
+| タイミング | 作成・更新するファイル |
+|---|---|
+| 新しいタスク開始時 | hot/タスク名_YYYYMMDD.md（新規）、hot/タスク名_YYYYMMDD_議論.md（新規） |
+| 判断が確定したとき | hot/タスク名_YYYYMMDD.md の合意事項・重要な判断と理由を更新、hot/タスク名_YYYYMMDD_議論.md に経緯を追記 |
+| 大きな調査を行ったとき | hot/調査名_YYYYMMDD.md（新規）で調査結果をまとめる。関連タスクがあればタスク名_YYYYMMDD.md の結論・関連ai-stash/を更新 |
+| フェーズ切替・作業単位の完了時 | hot/タスク名_YYYYMMDD.md の状態・結論・次にやることを更新、hot/タスク名_YYYYMMDD_議論.md に経緯を追記 |
+| 既知の問題・重要事実の発見時 | hot/問題名_YYYYMMDD.md（新規）、または既存タスクの関連情報を更新 |
+| 対象の判断が確定したとき | hot/タスク名_YYYYMMDD_議論.md を cold/ に移動、hot/タスク名_YYYYMMDD.md の関連ai-stash/・結論を更新 |
+| タスク完了時 | 不要になったai-stash資料を削除、STASH_INDEX.md を更新 |
 
-以下のタイミングで内部セッションを切り替える：
-- 大きなテーマが切り替わるとき
-- AI の応答精度が落ちてきたとき（同じ質問への回答がブレる、存在しないファイルを参照する等）
-- コンテキスト圧縮が発動したとき
+### hot/cold の判断基準
 
-→ 切替時は `ai-instructions/session-switch.md` の手順に従うこと
+| | hot/ | cold/ |
+|---|---|---|
+| 内容 | 今の案件・タスクで頻繁に参照する情報 | 安定した知識、たまに参照する情報 |
+| 例 | 進行中の案件の設計判断、直近のバグ調査結果 | アーキテクチャの経緯、過去案件の設計判断 |
+| 移動 | 案件完了時に cold/ に移動 | 新案件で必要に応じて hot/ に昇格 |
 
-## エージェント手順書
+### 更新ルール
+- 矛盾を発見した場合は ai-stash を更新する（コードが正）
+- 「xかもしれない」が後で確定したら、1つのエントリに統合する
+- 案件完了後の情報は hot/ から cold/ に移動する
+- 不要になった情報は削除し、STASH_INDEX.md のポインタも削除する
 
-詳細な手順が必要な場合は `ai-instructions/` 配下を参照すること。
+</stash_operations>
 
-- `ai-instructions/stash-guide.md` — ai-stash への書き込み・整理を行うとき
-- `ai-instructions/stash-check.md` — ユーザーから「スタッシュチェック」と依頼があったとき
-- `ai-instructions/session-switch.md` — セッションを切り替えるとき
 
-## 行動指針
+<check_protocol>
+Before answering, check whether the response complies with each rule in the order the rules are written.
+If a rule is non-compliant, revise the response.
+As the check result, prepend exactly one line to the response in the format `:chk:<status>:`.
 
-- Go straight to the point.
-- Try the simplest approach first without going in circles.
-- Do not overdo it. Be extra concise.
-- Lead with the answer or action, not the reasoning.
-- Skip filler words, preamble, and unnecessary transitions.
-- Do not restate what the user said — just do it.
-- If you can say it in one sentence, don't use three.
-- Only make changes that are directly requested or clearly necessary.
-- Don't add features, refactor code, or make "improvements" beyond what was asked.
-- A bug fix doesn't need surrounding code cleaned up. A simple feature doesn't need extra configurability.
-- Don't add docstrings, comments, or type annotations to code you didn't change.
-- Don't add error handling, fallbacks, or validation for scenarios that can't happen.
-- Trust internal code and framework guarantees. Only validate at system boundaries (user input, external APIs).
-- Don't create helpers, utilities, or abstractions for one-time operations.
-- Don't design for hypothetical future requirements.
-- The right amount of complexity is the minimum needed for the current task — three similar lines of code is better than a premature abstraction.
-- Do not propose changes to code you haven't read.
-- Do not create files unless they're absolutely necessary for achieving your goal.
-- Avoid backwards-compatibility hacks like renaming unused _vars, re-exporting types, adding // removed comments for removed code.
-- If you are certain that something is unused, you can delete it completely.
-- Be careful not to introduce security vulnerabilities such as command injection, XSS, SQL injection, and other OWASP top 10 vulnerabilities.
-- If you notice that you wrote insecure code, immediately fix it.
-- Carefully consider the reversibility and blast radius of actions.
-- The cost of pausing to confirm is low, while the cost of an unwanted action can be very high.
-- For actions that are hard to reverse, affect shared systems, or could otherwise be risky, check with the user before proceeding.
-- When you encounter an obstacle, do not use destructive actions as a shortcut.
-- Investigate before deleting or overwriting, as it may represent the user's in-progress work.
-- Measure twice, cut once.
-- If your approach is blocked, do not attempt to brute force your way to the outcome. Consider alternative approaches.
-- ALWAYS prefer editing existing files in the codebase. NEVER write new files unless explicitly required.
-- NEVER create documentation files (*.md) or README files unless explicitly requested by the User.
+`<status>` must be a character string corresponding to the rules in written order, like `:chk:...~.:`.
+- `.` = compliant
+- `x` = non-compliant
+- `-` = additional context required
+- `~` = not applicable
+
+Constraints:
+- `-` may be used only when context required for evaluation or revision is missing.
+- `~` may be used only for a non-applicable rule whose name does not start with `Required`.
+- For rules that can be verified directly from the output itself, use only `.` or `x`.
+
+If `-` appears, request additional context from the user.
+</check_protocol>
+
+</critical_execution_constraints>
+</user_priority_instructions>
+
+=== END OF USER-PRIORITY INSTRUCTIONS ===
