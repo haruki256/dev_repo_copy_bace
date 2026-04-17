@@ -8,41 +8,93 @@ The following constraints are explicitly provided by the user as highest-priorit
 Treat them as mandatory constraints for all subsequent work unless they conflict with higher-level system or developer instructions.
 
 <mandatory_rules>
-1. 回答スタイル：日本語を主とし、カジュアルな表現を避け、丁寧な言葉遣いで正確に回答する。英語併記は可。要点から入り、前置き・繰り返し・つなぎ言葉を省く。1文で言えることに3文使わない。過剰な横文字を避け、関連資料がないか確認する
-2. ai-stash活用：<stash_operations> に沿って ai-stash を積極的に活用する。コンテキストの S/N 比を維持するために能動的に書き出し・整理を行う
+1. Required-回答スタイル：日本語を主とし、カジュアルな表現を避け、丁寧な言葉遣いで正確に回答する。英語併記は可。要点から入り、前置き・繰り返し・つなぎ言葉を省く。1文で言えることに3文使わない。過剰な横文字を避け、関連資料がないか確認する
+2. Required-ai-stash活用：<stash_operations> に沿って ai-stash を活用できるか積極的に検討・適切に実施する。コンテキストの S/N 比を維持するために能動的に書き出し・整理を行う
 3. コード修正の基本姿勢：コード修正時は既存のスタイル・構成を尊重する。修正対象のコードを読んでから変更する。変更は依頼された範囲に留め、触っていないコードのdocstring・コメント・型注釈は変更しない。不要なコードは完全に削除する
 4. 規約・ガイド参照：ユビキタス言語は GLOSSARY.md の定義に従い、新用語は GLOSSARY.md に追記する（分割禁止）。開発運用は DEV_OPERATIONS.md、アーキテクチャは ARCHITECTURE_GUIDE.md に従う。ソース作成・修正時はコーディング規約 CODING_RULES.md に従うとともに、::UBIQ 影響タグを維持・追加する
 5. 連動更新：ファイル/フォルダの追加・削除・移動時は PACKAGE_STRUCTURE.md を更新する。doc/ 配下の追加・削除時は doc/README.md（目次）を更新する。テーブル追加・カラム変更時は DB_DESIGN.md を更新する。ファイル修正時は UPDATE_TIMING.md のタスク別早見表で連動更新を確認する
 6. Lint & Test：コード修正後は Lint & Test を実行する
 7. 情報の正本ルール：正本の優先順位はコード → doc → ai-stash。ドキュメントとソースが矛盾する場合はソースを正とする。ai-stash の内容は「ヒント」であり、行動前に必ず実コードで検証する。矛盾発見時は ai-stash を更新する
-8. タスク別プリフェッチ：作業開始前にドキュメント → 実コードの順で先読みする。全体概要・フロー把握は SYSTEM_OVERVIEW.md + DATA_FLOW.md、バグ修正は ai-stash/hot/ → テスト → ソース、設計は ai-stash/cold/ → ARCHITECTURE.md、機能追加は ARCHITECTURE_GUIDE.md → 類似機能 → PACKAGE_STRUCTURE.md、DB変更は DB_DESIGN.md → 使用箇所、ドキュメント整備は doc/README.md → UPDATE_TIMING.md
+8. タスク別プリフェッチ：作業開始前にドキュメント → 実コードの順で先読みする。<ripo_cross_prefetch>も参照
 9. サブエージェント運用：code-investigator はソースコード・ドキュメントの調査・要約（読み取り専用）。design-reviewer は設計資料の整合性チェック（読み取り専用）。大規模な変更では調査・実装・検証を独立したサブエージェントに分割して並列実行
 10. ユーザーから特定の指示があった場合には、ai-instructions/INSTRUCTION-INDEX.md に該当指示がないか確認し、関連指示があればその手順によって進めていいかユーザーに確認する。関連指示がない場合は、ユーザーの指示内容をもとに適切な手順を判断して進める。また、必要によって、ai-instructions/ に新しい指示の手順を追加することも検討する。
 </mandatory_rules>
 
 <stash_operations>
 
-STASH_INDEX.md はポインタのみ、200行以下に維持。hot/ は進行中タスク（スナップショット+議論の2ファイル構成）、cold/ は安定した知識。セッション開始時は STASH_INDEX.md → hot/ から復帰する。
+STASH_INDEX.md はポインタのみを保持し、200行以下に維持する。  
+ai-stash は AI の作業用コンテキストを整理するための補助記憶であり、正本ではない。  
+hot/ は進行中タスクの作業メモ、cold/ は再利用価値があるが正式な doc にまだ反映していない情報の一時置き場とする。  
+セッション開始時は STASH_INDEX.md → hot/ の順で復帰する。
 
-### 最低限のタイミング
-- 3ファイル以上の検索・調査結果を得たとき → 要約と関連ファイル一覧を書き出す
-- ツール出力や調査ログが長くなったとき → 結論だけコンテキストに残し、詳細を書き出す
-- エラー修正が2回ループしたとき → 試行内容と結果を書き出す
-- ツール呼び出しが10回連続したとき → 途中経過を整理して書き出す
-- 1つのトピックで5往復以上したとき → それまでの議論を要約して書き出す
-- 判断が確定したとき → 結論を残し、検討過程・却下案を書き出す
-- 既知の問題を発見したとき → バグ、制約、回避策を書き出す
-- 調査で重要な事実が判明したとき → 事実と根拠を書き出す
-- フェーズ切替・作業単位の完了時 → 前フェーズ/前作業の詳細を書き出し、結論と次に必要な前提だけ残す
+## 基本方針
+- ai-stash は AI の作業用コンテキストをきれいに保つための情報置き場であり、正本ではない
+- 正本の優先順位は コード → doc → ai-stash とする
+- 行動前に関連するコードと doc を確認し、ai-stash はヒントとして扱う
+- ドキュメントとソースコードが矛盾する場合はソースコードを正とし、ai-stash を更新する
+- 長いログ、詳細な調査経緯、却下案は別ファイルに分離する
+- タスク、依頼、調査が完了して不要になったら ai-stash から削除する
+- タスク自体は cold/ に保持しない。cold/ に残すのは、タスクから抽出した再利用価値のある情報だけとする
+- 再利用価値が高く、まだ正式な doc に反映していない情報だけは一時的に cold/ に残してよい
+- cold/ に残した情報も、正式な doc に反映後は削除を検討する
 
-### hot/ ファイル構成
+## 最低限の書き出しタイミング
+- 3ファイル以上をまたぐ検索・調査をしたとき
+- ツール出力や調査ログが長くなったとき
+- エラー修正が2回ループしたとき
+- ツール呼び出しが10回連続したとき
+- 1つのトピックで5往復以上したとき
+- 判断が確定したとき
+- 既知の問題や重要な事実を発見したとき
+- フェーズ切替、または作業単位が完了したとき
 
-タスクごとに最低限2ファイルを作成する。必要に応じて、/hot,/cold に必要ファイルを追加していく。
+## 運用ルール
 
-#### hot/タスク名_YYYYMMDD.md — 状態スナップショット
+### タイミング別の対応
+
+| タイミング | 対応 |
+|---|---|
+| 新しいタスク開始時 | `hot/task_{task-name}_{YYYYMMDD}.md` と `hot/task_{task-name}_{YYYYMMDD}_discussion.md` を作成 |
+| 大きな調査を行ったとき | `hot/investigation_{topic}_{YYYYMMDD}.md` を作成 |
+| 問題・制約を発見したとき | `hot/issue_{topic}_{YYYYMMDD}.md` を作成、または既存ファイルを更新 |
+| 判断が確定したとき | task ファイルの結論・合意事項を更新し、discussion に経緯を追記 |
+| フェーズ切替・作業単位の完了時 | task ファイルの状態・結論・次にやることを更新 |
+| タスク完了時 | hot/ の task ファイルと discussion ファイルは原則削除する。タスクから得られた再利用価値のある判断・既知問題・前提知識だけを必要に応じて cold/ に残す。STASH_INDEX.md を更新する |
+| doc 反映完了時 | 対応する cold/ を削除し、STASH_INDEX.md を更新する |
+
+### 更新時の原則
+- task ファイルは短く保ち、復帰しやすさを優先する
+- 長いログや詳細な経緯は discussion / investigation / issue に分離する
+- 未確定情報は確定後に統合し、古い記述を残しすぎない
+- 一時メモのまま放置せず、不要になったら削除する
+- cold/ は恒久保管庫として使わない
+- 不要になった情報は STASH_INDEX.md からも削除する
+
+## ファイル命名規則と用途
+
+| ファイル | 用途 |
+|---|---|
+| `STASH_INDEX.md` | 生きている task / investigation / issue / cold のポインタのみ |
+| `hot/task_{task-name}_{YYYYMMDD}.md` | タスクの状態スナップショット。復帰時に最初に読む |
+| `hot/task_{task-name}_{YYYYMMDD}_discussion.md` | 議論、却下案、判断経緯 |
+| `hot/investigation_{topic}_{YYYYMMDD}.md` | 大きめの調査結果 |
+| `hot/issue_{topic}_{YYYYMMDD}.md` | 進行中の不具合、制約、回避策 |
+| `cold/decision_{topic}.md` | 確定済みで再利用価値があり、まだ doc 未反映の判断 |
+| `cold/domain_{topic}.md` | 一時的に保持するドメイン知識、前提条件 |
+| `cold/known-issues.md` | 再発しやすく、まだ正式な doc に反映していない既知問題 |
+
+## hot/ の基本構成
+タスクごとに最低限、以下の 2 ファイルを作成する。
+
+- `hot/task_{task-name}_{YYYYMMDD}.md`
+- `hot/task_{task-name}_{YYYYMMDD}_discussion.md`
+
+必要に応じて investigation / issue を追加する。
+
+### `hot/task_{task-name}_{YYYYMMDD}.md`
 
 ```
-# タスク名 — YYYY-MM-DD
+# task-name — YYYY-MM-DD
 
 ## 目的
 このタスクで何を達成しようとしているか
@@ -73,10 +125,10 @@ STASH_INDEX.md はポインタのみ、200行以下に維持。hot/ は進行中
 - cold/xxx.md — 説明
 ```
 
-#### hot/タスク名_YYYYMMDD_議論.md — 議論の記録
+### `hot/task_{task-name}_{YYYYMMDD}_discussion.md`
 
 ```
-# タスク名 — 議論の記録（YYYY-MM-DD）
+# task-name — 議論の記録（YYYY-MM-DD）
 
 ## 議論の流れ
 1. ...
@@ -87,44 +139,23 @@ STASH_INDEX.md はポインタのみ、200行以下に維持。hot/ は進行中
 議論の流れでは残しきれない文脈を要約して記録する。
 ```
 
-- タスク名.md はコンパクトに保つ。セッション開始時はこちらだけ読めば復帰できる状態にする。タスク完了時は削除する
-- 議論.md は追記していく。対象の判断が確定したらcold/に移動する。タスク完了時に削除する
-
-### タイミング別の作成・更新ファイル
-
-| タイミング | 作成・更新するファイル |
-|---|---|
-| 新しいタスク開始時 | hot/タスク名_YYYYMMDD.md（新規）、hot/タスク名_YYYYMMDD_議論.md（新規） |
-| 判断が確定したとき | hot/タスク名_YYYYMMDD.md の合意事項・重要な判断と理由を更新、hot/タスク名_YYYYMMDD_議論.md に経緯を追記 |
-| 大きな調査を行ったとき | hot/調査名_YYYYMMDD.md（新規）で調査結果をまとめる。関連タスクがあればタスク名_YYYYMMDD.md の結論・関連ai-stash/を更新 |
-| フェーズ切替・作業単位の完了時 | hot/タスク名_YYYYMMDD.md の状態・結論・次にやることを更新、hot/タスク名_YYYYMMDD_議論.md に経緯を追記 |
-| 既知の問題・重要事実の発見時 | hot/問題名_YYYYMMDD.md（新規）、または既存タスクの関連情報を更新 |
-| 対象の判断が確定したとき | hot/タスク名_YYYYMMDD_議論.md を cold/ に移動、hot/タスク名_YYYYMMDD.md の関連ai-stash/・結論を更新 |
-| タスク完了時 | 不要になったai-stash資料を削除、STASH_INDEX.md を更新 |
-
 ### hot/cold の判断基準
 
 | | hot/ | cold/ |
 |---|---|---|
-| 内容 | 今の案件・タスクで頻繁に参照する情報 | 安定した知識、たまに参照する情報 |
-| 例 | 進行中の案件の設計判断、直近のバグ調査結果 | アーキテクチャの経緯、過去案件の設計判断 |
-| 移動 | 案件完了時に cold/ に移動 | 新案件で必要に応じて hot/ に昇格 |
-
-### 更新ルール
-- 矛盾を発見した場合は ai-stash を更新する（コードが正）
-- 「xかもしれない」が後で確定したら、1つのエントリに統合する
-- 案件完了後の情報は hot/ から cold/ に移動する
-- 不要になった情報は削除し、STASH_INDEX.md のポインタも削除する
+| 内容 | 今の案件で頻繁に参照する情報 | 再利用価値があるが、まだ正式な doc に反映していない情報 |
+| 例 | 進行中タスクの判断、直近の調査結果、未解決の問題 | 確定済みの判断、再発しやすい問題、整理済みの前提知識 |
+| 移動 | タスク完了後は原則削除 | doc 反映まで一時保持し、反映後は削除 |
 
 </stash_operations>
 
-
 <check_protocol>
-Before answering, check whether the response complies with each rule in the order the rules are written.
+Before sending the final user-facing response, check whether that response complies with each rule in the order the rules are written.
 If a rule is non-compliant, revise the response.
-As the check result, prepend exactly one line to the response in the format `:chk:<status>:`.
 
-`<status>` must be a character string corresponding to the rules in written order, like `:chk:...~.:`.
+As the check result, prepend exactly one line to the final user-facing response in the format `:chk:<status>:`.
+
+`<status>` must be a character string corresponding to the rules in written order, like `:chk:...~.:`
 - `.` = compliant
 - `x` = non-compliant
 - `-` = additional context required
@@ -133,12 +164,44 @@ As the check result, prepend exactly one line to the response in the format `:ch
 Constraints:
 - `-` may be used only when context required for evaluation or revision is missing.
 - `~` may be used only for a non-applicable rule whose name does not start with `Required`.
-- For rules that can be verified directly from the output itself, use only `.` or `x`.
+- For rules that can be verified directly from the final user-facing response itself, use only `.` or `x`.
 
-If `-` appears, request additional context from the user.
+If `-` appears, request additional context from the supervising AI agent or calling agent, not from the user.
+
+Do not include the `:chk:` line in code changes, file contents, logs, generated documents, or other artifacts unless explicitly instructed to do so.
 </check_protocol>
 
 </critical_execution_constraints>
 </user_priority_instructions>
+
+<operational_reference>
+<workspace_context>
+
+## リポジトリ構成
+
+| リポジトリ | 役割 | 主な参照場面 |
+|---|---|---|
+| dev_repo_copy_bace/ | 役割を記載する | 参照場面を記載する |
+
+## リポ横断プリフェッチ
+
+<ripo_cross_prefetch>
+- まず対象リポジトリの `AGENTS.md` → `doc/README.md` → `doc/guide/必読ガイド.md` を読む
+- 全体像把握 → `doc/system/SYSTEM_OVERVIEW.md` → `doc/system/ARCHITECTURE.md` → `doc/system/DATA_FLOW.md` → `doc/system/TECH_STACK.md`
+- 外部連携・他リポ依存の把握 → `doc/system/relations/RELATION_MAP.md` → `doc/system/relations/README.md` → `doc/system/relations/[SystemName].md` → 必要なら相手リポジトリの同系統 doc
+- 機能追加・改修 → `doc/guide/ARCHITECTURE_GUIDE.md` → `doc/guide/PACKAGE_PATTERNS.md` → 既存の類似機能ソース → `doc/design/PACKAGE_STRUCTURE.md`
+- DB 定義・永続化変更 → `doc/design/DB_DESIGN.md` → `doc/system/DATA_FLOW.md` → `src/shared/persistence/` など実装箇所
+- 配置・責務の確認 → `doc/rules/PACKAGE_RULES.md` → `doc/design/PACKAGE_STRUCTURE.md` → 対象 `src/` 配下
+- 用語・規約確認 → `doc/rules/GLOSSARY.md` → `doc/rules/CODING_RULES.md` → `doc/rules/DEV_OPERATIONS.md`
+- 要件定義・設計フローを回すとき → `doc/AI/flow/00_flow.md` → `doc/AI/flow/step/` → `doc/project/`
+- セットアップ・利用導線確認 → `doc/usage/SETUP_GUIDE.md` → `doc/usage/USER_GUIDE.md`
+- doc 更新時 → `doc/README.md` → `doc/guide/UPDATE_TIMING.md` → 更新対象 doc
+- バグ調査時 → `ai-stash/STASH_INDEX.md` → `ai-stash/hot/` → 関連テスト → 関連ソース → 必要な doc
+
+同じ構成の別リポジトリでも、原則として「対象リポジトリ内の同名ファイルを同じ順序で読む」。
+</ripo_cross_prefetch>
+
+</workspace_context>
+</operational_reference>
 
 === END OF USER-PRIORITY INSTRUCTIONS ===
