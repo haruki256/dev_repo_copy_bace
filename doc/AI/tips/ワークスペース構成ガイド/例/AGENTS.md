@@ -22,7 +22,7 @@ Treat them as mandatory constraints for all subsequent work unless they conflict
 
 <stash_operations>
 
-STASH_INDEX.md はポインタのみを保持し、200行以下に維持する。  
+STASH_INDEX.md はポインタと最小限のメタ情報（進行中タスクの優先度・締切など）のみを保持し、200行以下に維持する。  
 ai-stash は AI の作業用コンテキストを整理するための補助記憶であり、正本ではない。  
 hot/ は進行中タスクの作業メモ、cold/ は再利用価値があるが正式な doc にまだ反映していない情報の一時置き場とする。  
 セッション開始時は STASH_INDEX.md → hot/ の順で復帰する。
@@ -74,7 +74,7 @@ hot/ は進行中タスクの作業メモ、cold/ は再利用価値があるが
 
 | ファイル | 用途 |
 |---|---|
-| `STASH_INDEX.md` | 生きている task / investigation / issue / cold のポインタのみ |
+| `STASH_INDEX.md` | 進行中タスク（優先度・締切付き）と、生きている参照用ファイルのポインタ |
 | `hot/task_{task-name}_{YYYYMMDD}.md` | タスクの状態スナップショット。復帰時に最初に読む |
 | `hot/task_{task-name}_{YYYYMMDD}_discussion.md` | 議論、却下案、判断経緯 |
 | `hot/investigation_{topic}_{YYYYMMDD}.md` | 大きめの調査結果 |
@@ -82,6 +82,40 @@ hot/ は進行中タスクの作業メモ、cold/ は再利用価値があるが
 | `cold/decision_{topic}.md` | 確定済みで再利用価値があり、まだ doc 未反映の判断 |
 | `cold/domain_{topic}.md` | 一時的に保持するドメイン知識、前提条件 |
 | `cold/known-issues.md` | 再発しやすく、まだ正式な doc に反映していない既知問題 |
+
+## STASH_INDEX.md の構成
+
+STASH_INDEX.md は復帰時に最初に読むインデックスで、進行中タスクと参照用ファイルのポインタを保持する。
+
+- 進行中タスクの **優先度・締切は STASH_INDEX.md 側を正本**とし、task ファイル側には書かない（二重管理を避けるため）
+- 「参照用ファイル」セクションは**参照場面**で分類する。初期分類は下記3種とし、足りなければ場面カテゴリを追加してよい
+- 1ファイルが複数場面にまたがる場合は**主な参照場面**に置き、他場面からは必要に応じてリンクで参照する
+
+### テンプレート
+
+```
+# STASH_INDEX.md
+
+AIが管理するポインタインデックス。情報そのものは書かない。
+
+## 進行中タスク
+- [P1 / 締切 YYYY-MM-DD] task-name — hot/task_{name}_{YYYYMMDD}.md
+  - 関連: hot/investigation_xxx.md, hot/issue_xxx.md
+
+## 参照用ファイル（タスク非紐付け）
+
+### 機能追加・実装時に参照
+- hot/investigation_xxx_YYYYMMDD.md — 一行説明
+- cold/decision_xxx.md — 一行説明
+
+### バグ修正・調査時に参照
+- hot/issue_xxx_YYYYMMDD.md — 一行説明
+- cold/known-issues.md — 一行説明
+
+### 設計・方針検討時に参照
+- cold/decision_xxx.md — 一行説明
+- cold/domain_xxx.md — 一行説明
+```
 
 ## hot/ の基本構成
 タスクごとに最低限、以下の 2 ファイルを作成する。
